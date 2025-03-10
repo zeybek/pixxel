@@ -1,0 +1,3 @@
+"""
+Pixxel application root package.
+""" 
