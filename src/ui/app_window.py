@@ -54,13 +54,13 @@ class AppWindow:
         style.configure("TLabel", background=bg_color, foreground=fg_color, font=("Arial", 10))
         style.configure("TButton", font=("Arial", 10), background=accent_color)
         
-        # Configure labelframes
+        # Configure labelframes - make them more compact
         style.configure("TLabelframe", background=bg_color, foreground=fg_color, font=("Arial", 10, "bold"))
         style.configure("TLabelframe.Label", background=bg_color, foreground=fg_color, font=("Arial", 10, "bold"))
         
-        # Configure notebook (tabs)
-        style.configure("TNotebook", background=bg_color, foreground=fg_color, tabmargins=[2, 5, 2, 0])
-        style.configure("TNotebook.Tab", background=frame_bg, foreground=fg_color, padding=[10, 2])
+        # Configure notebook (tabs) - make them more compact
+        style.configure("TNotebook", background=bg_color, foreground=fg_color, tabmargins=[2, 2, 2, 0])
+        style.configure("TNotebook.Tab", background=frame_bg, foreground=fg_color, padding=[8, 1])
         style.map("TNotebook.Tab", 
                  background=[("selected", accent_color)],
                  foreground=[("selected", "#ffffff")])
@@ -85,13 +85,13 @@ class AppWindow:
     
     def _setup_ui(self):
         """Setup the main UI components"""
-        # Main frame
-        self.main_frame = ttk.Frame(self.root, padding="10")
+        # Main frame with reduced padding
+        self.main_frame = ttk.Frame(self.root, padding="5")
         self.main_frame.grid(row=0, column=0, sticky=(tk.W, tk.E, tk.N, tk.S))
         
         # Create a notebook for tabs
         self.notebook = ttk.Notebook(self.main_frame)
-        self.notebook.grid(row=0, column=0, columnspan=2, sticky="ew", pady=5)
+        self.notebook.grid(row=0, column=0, columnspan=2, sticky="ew", pady=2)
         
         # Basic settings tab
         self.basic_tab = ttk.Frame(self.notebook)
@@ -113,102 +113,123 @@ class AppWindow:
     
     def _setup_basic_controls(self):
         """Setup basic control buttons and settings"""
+        # Create a compact horizontal frame for all controls
+        controls_frame = ttk.Frame(self.basic_tab)
+        controls_frame.pack(fill=tk.X, padx=5, pady=2)
+        
         # Select file button
-        self.select_btn = ttk.Button(self.basic_tab, text="Select Image", command=self._select_image)
-        self.select_btn.grid(row=0, column=0, pady=5, padx=5)
+        self.select_btn = ttk.Button(controls_frame, text="Select Image", command=self._select_image)
+        self.select_btn.pack(side=tk.LEFT, padx=5, pady=2)
         
-        # Basic settings frame
-        settings_frame = ttk.LabelFrame(self.basic_tab, text="Settings", padding="5")
-        settings_frame.grid(row=0, column=1, pady=5, padx=10, sticky="ew")
+        # Settings frame - more compact
+        settings_frame = ttk.LabelFrame(controls_frame, text="Settings", padding="2")
+        settings_frame.pack(side=tk.LEFT, padx=5, pady=2, fill=tk.X, expand=True)
         
+        # Use grid layout for settings with reduced padding
         # Pixel size setting
-        ttk.Label(settings_frame, text="Pixel Size:").grid(row=0, column=0)
+        ttk.Label(settings_frame, text="Pixel Size:").grid(row=0, column=0, padx=2, pady=0)
         self.pixel_size = tk.StringVar(value="8")
         pixel_entry = ttk.Entry(settings_frame, textvariable=self.pixel_size, width=5)
-        pixel_entry.grid(row=0, column=1, padx=5)
+        pixel_entry.grid(row=0, column=1, padx=2, pady=0)
         
         # Color count setting
-        ttk.Label(settings_frame, text="Color Count:").grid(row=0, column=2, padx=5)
+        ttk.Label(settings_frame, text="Color Count:").grid(row=0, column=2, padx=2, pady=0)
         self.color_count = tk.StringVar(value="32")
         color_entry = ttk.Entry(settings_frame, textvariable=self.color_count, width=5)
-        color_entry.grid(row=0, column=3)
+        color_entry.grid(row=0, column=3, padx=2, pady=0)
+        
+        # Action buttons
+        button_frame = ttk.Frame(controls_frame)
+        button_frame.pack(side=tk.RIGHT, padx=5, pady=2)
         
         # Convert button
-        self.convert_btn = ttk.Button(settings_frame, text="Convert", command=self._convert_image)
-        self.convert_btn.grid(row=0, column=4, padx=10)
+        self.convert_btn = ttk.Button(button_frame, text="Convert", command=self._convert_image)
+        self.convert_btn.pack(side=tk.LEFT, padx=2, pady=0)
         
         # Save button
-        self.save_btn = ttk.Button(settings_frame, text="Save", command=self._save_image)
-        self.save_btn.grid(row=0, column=5)
+        self.save_btn = ttk.Button(button_frame, text="Save", command=self._save_image)
+        self.save_btn.pack(side=tk.LEFT, padx=2, pady=0)
     
     def _setup_advanced_controls(self):
         """Setup advanced control options"""
-        # Dithering options
-        dither_frame = ttk.LabelFrame(self.advanced_tab, text="Dithering", padding="5")
-        dither_frame.grid(row=0, column=0, pady=5, padx=5, sticky="ew")
+        # Create a main frame for advanced controls
+        adv_controls_frame = ttk.Frame(self.advanced_tab)
+        adv_controls_frame.pack(fill=tk.X, padx=5, pady=2)
         
-        ttk.Label(dither_frame, text="Method:").grid(row=0, column=0, padx=5)
+        # Create a horizontal layout for the first row
+        row1_frame = ttk.Frame(adv_controls_frame)
+        row1_frame.pack(fill=tk.X, pady=1)
+        
+        # Dithering options
+        dither_frame = ttk.LabelFrame(row1_frame, text="Dithering", padding="2")
+        dither_frame.pack(side=tk.LEFT, padx=2, pady=1, fill=tk.X, expand=True)
+        
+        ttk.Label(dither_frame, text="Method:").grid(row=0, column=0, padx=2, pady=0)
         self.dither_method = tk.StringVar(value="none")
         dither_combo = ttk.Combobox(dither_frame, textvariable=self.dither_method, width=15)
         dither_combo['values'] = list(ImageProcessor.DITHER_METHODS.keys())
-        dither_combo.grid(row=0, column=1, padx=5)
+        dither_combo.grid(row=0, column=1, padx=2, pady=0)
         dither_combo.state(['readonly'])
         
         # Color palette options
-        palette_frame = ttk.LabelFrame(self.advanced_tab, text="Color Palette", padding="5")
-        palette_frame.grid(row=1, column=0, pady=5, padx=5, sticky="ew")
+        palette_frame = ttk.LabelFrame(row1_frame, text="Color Palette", padding="2")
+        palette_frame.pack(side=tk.LEFT, padx=2, pady=1, fill=tk.X, expand=True)
         
-        ttk.Label(palette_frame, text="Palette:").grid(row=0, column=0, padx=5)
+        ttk.Label(palette_frame, text="Palette:").grid(row=0, column=0, padx=2, pady=0)
         self.palette_name = tk.StringVar(value="")
         palette_combo = ttk.Combobox(palette_frame, textvariable=self.palette_name, width=15)
         palette_combo['values'] = [""] + list(ImageProcessor.PALETTES.keys())
-        palette_combo.grid(row=0, column=1, padx=5)
+        palette_combo.grid(row=0, column=1, padx=2, pady=0)
         palette_combo.state(['readonly'])
         
-        # Filter options
-        filter_frame = ttk.LabelFrame(self.advanced_tab, text="Filters", padding="5")
-        filter_frame.grid(row=2, column=0, pady=5, padx=5, sticky="ew")
+        # Create a horizontal layout for the second row
+        row2_frame = ttk.Frame(adv_controls_frame)
+        row2_frame.pack(fill=tk.X, pady=1)
         
-        ttk.Label(filter_frame, text="Filter:").grid(row=0, column=0, padx=5)
+        # Filter options
+        filter_frame = ttk.LabelFrame(row2_frame, text="Filters", padding="2")
+        filter_frame.pack(side=tk.LEFT, padx=2, pady=1, fill=tk.X, expand=True)
+        
+        ttk.Label(filter_frame, text="Filter:").grid(row=0, column=0, padx=2, pady=0)
         self.filter_type = tk.StringVar(value="none")
         filter_combo = ttk.Combobox(filter_frame, textvariable=self.filter_type, width=15)
         filter_combo['values'] = ["none", "grayscale", "sepia", "invert"]
-        filter_combo.grid(row=0, column=1, padx=5)
+        filter_combo.grid(row=0, column=1, padx=2, pady=0)
         filter_combo.state(['readonly'])
         
         # Apply filter button
         self.apply_filter_btn = ttk.Button(filter_frame, text="Apply Filter", command=self._apply_filter)
-        self.apply_filter_btn.grid(row=0, column=2, padx=5)
+        self.apply_filter_btn.grid(row=0, column=2, padx=2, pady=0)
         
         # Batch processing
-        batch_frame = ttk.LabelFrame(self.advanced_tab, text="Batch Processing", padding="5")
-        batch_frame.grid(row=3, column=0, pady=5, padx=5, sticky="ew")
+        batch_frame = ttk.LabelFrame(row2_frame, text="Batch Processing", padding="2")
+        batch_frame.pack(side=tk.LEFT, padx=2, pady=1, fill=tk.X, expand=True)
         
         self.batch_btn = ttk.Button(batch_frame, text="Process Folder", command=self._batch_process)
-        self.batch_btn.grid(row=0, column=0, padx=5)
+        self.batch_btn.pack(padx=2, pady=0)
     
     def _setup_image_area(self):
         """Setup the image display area"""
         # Create a dark frame for the image area
         bg_color = "#2e2e2e"  # Dark background
         self.image_frame = ttk.Frame(self.main_frame)
-        self.image_frame.grid(row=1, column=0, columnspan=2, pady=10)
+        self.image_frame.grid(row=1, column=0, columnspan=2, pady=5)
         
         # Original image
         original_frame = ttk.LabelFrame(self.image_frame, text="Original Image")
-        original_frame.grid(row=0, column=0, padx=10)
+        original_frame.grid(row=0, column=0, padx=5)
         
         # Create a dark canvas for the original image
         self.original_canvas = tk.Canvas(original_frame, bg=bg_color, width=400, height=400, highlightthickness=0)
-        self.original_canvas.grid(row=0, column=0, padx=5, pady=5)
+        self.original_canvas.grid(row=0, column=0, padx=2, pady=2)
         
         # Processed image
         processed_frame = ttk.LabelFrame(self.image_frame, text="Pixel Art")
-        processed_frame.grid(row=0, column=1, padx=10)
+        processed_frame.grid(row=0, column=1, padx=5)
         
         # Create a dark canvas for the processed image
         self.processed_canvas = tk.Canvas(processed_frame, bg=bg_color, width=400, height=400, highlightthickness=0)
-        self.processed_canvas.grid(row=0, column=0, padx=5, pady=5)
+        self.processed_canvas.grid(row=0, column=0, padx=2, pady=2)
     
     def _setup_status_bar(self):
         """Setup status bar at the bottom of the window"""
@@ -219,7 +240,7 @@ class AppWindow:
         status_bar = tk.Label(self.root, textvariable=self.status_var, 
                              relief=tk.SUNKEN, anchor=tk.W, 
                              bg=bg_color, fg=fg_color, 
-                             bd=1, padx=5, pady=2)
+                             bd=1, padx=5, pady=1)  # Reduced padding
         status_bar.grid(row=1, column=0, sticky=(tk.W, tk.E))
     
     def _select_image(self):
