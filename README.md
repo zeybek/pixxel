@@ -51,7 +51,7 @@ pixxel/
 1. Python 3.8 or higher is required.
 2. Clone the repository:
    ```bash
-   git clone https://github.com/yourusername/pixxel.git
+   git clone https://github.com/zeybek/pixxel.git
    cd pixxel
    ```
 3. Install required packages:
